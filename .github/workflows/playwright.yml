@@ -15,7 +15,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16' # Ensure you use a compatible Node.js version
+          node-version: '16'
 
       - name: Install dependencies
         run: npm install
@@ -26,19 +26,12 @@ jobs:
       - name: Run Playwright tests
         run: npm test
 
-      - name: Generate unique report directory
-        id: vars
-        run: echo "REPORT_DIR=playwright-report-$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
-
-      - name: Rename Playwright report directory
-        run: mv playwright-report ${{ env.REPORT_DIR }}
-
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.REPORT_DIR }}
-          path: ${{ env.REPORT_DIR }}
+          name: playwright-report
+          path: playwright-report
 
       - name: Setup Pages
         uses: actions/configure-pages@v2
@@ -46,34 +39,8 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: ${{ env.REPORT_DIR }}
+          path: playwright-report
 
-      - name: Deploy Playwright report to GitHub Pages
+      - name: Deploy Playwright report to Github Pages
         id: deployment
         uses: actions/deploy-pages@v1
-
-      - name: Update reports index
-        run: |
-          REPORTS_DIR="reports"
-          INDEX_FILE="${REPORTS_DIR}/index.html"
-          
-          mkdir -p $REPORTS_DIR
-
-          if [[ ! -f $INDEX_FILE ]]; then
-            echo "<html><body><h1>Playwright Reports</h1><ul>" > $INDEX_FILE
-          fi
-
-          echo "<li><a href=\"${{ env.REPORT_DIR }}/index.html\">${{ env.REPORT_DIR }}</a></li>" >> $INDEX_FILE
-          echo "</ul></body></html>" >> $INDEX_FILE
-          
-          mv $INDEX_FILE ${{ env.REPORT_DIR }}/
-
-      - name: Commit and push index update
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git fetch origin
-          git pull --rebase
-          git add .
-          git commit -m "Update report index"
-          git push
