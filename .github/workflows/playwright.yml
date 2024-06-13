@@ -29,8 +29,6 @@ jobs:
       - name: Upload Playwright report
         if: always()
         run: |
-          mkdir -p playwright-report
-          mv path/to/report/* playwright-report/
           timestamp=$(date +%Ym%d%H%M%S)
           new_dir="playwright-report-$timestamp"
           mv playwright-report $new_dir
