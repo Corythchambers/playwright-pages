@@ -2,9 +2,7 @@ name: Playwright Tests
 
 on: [push, pull_request]
 
-permissions:
-  id-token: write
-  contents: read
+permissions: write-all
 
 jobs:
   test:
