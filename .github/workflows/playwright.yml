@@ -30,3 +30,10 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report
+      
+      - name: Deploy Playwright report to Github Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: playwright_report
